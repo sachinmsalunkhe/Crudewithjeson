@@ -1,0 +1,145 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            getstudentlist();
+
+            $("#btnSubmit").click(function () {
+                Addstudent();
+            })
+
+            $("#btnclear").click(function () {
+                Clearfield();
+            })
+        })
+
+
+        function Addstudent() {
+            var n = $("#txtname").val();
+            var e = $("#txtenglish").val();
+            var m = $("#txtMaths").val();
+            var s = $("#txtScience").val();
+
+            var st = { "name": n, "English": e, "Maths": m, "Science": s }
+            $.ajax({
+                url: '/Student/Addstudent',
+                method: 'post',
+                data:JSON.stringify(st),
+                contentType: 'application/Json',
+                success: function (resp) {
+                    alert(resp);
+                    getstudentlist();
+                    Clearfield();
+                }
+            })
+        }
+
+        function viewstudent(rno) {
+            $.ajax({
+                url: '/Student/Getstudentwithrno/' + rno,
+                method: 'get',
+                contentType: 'application/json',
+                success: function (resp) {
+                    $.each(resp, function (i, d) {
+                        $("#txtrno").val(d.rno);
+                        $("#txtname").val(d.name);
+                        $("#txtenglish").val(d.English);
+                        $("#txtMaths").val(d.Maths);
+                        $("#txtScience").val(d.Science);
+                        $("#btnupdate").show();
+                        $("#btnsubmit").hide();
+                    })
+                }
+            })
+        }
+
+        function Clearfield() {
+            $("#txtrno").val("");
+            $("#txtname").val("");
+            $("#txtenglish").val("");
+            $("#txtMaths").val("");
+            $("#txtScience").val("");
+            $("#btnupdate").hide();
+            $("#btnsubmit").show();
+
+        }
+
+        function getstudentlist() {
+            $.ajax({
+
+                url: '/Student/Getstudent',
+                method: 'get',
+                contentType: 'application/json',
+                success: function (resp) {
+                    $("#tdstudent").empty();
+                    $.each(resp, function (i, d) {
+                        $("#tdstudent").append("<tr><td>" + d.rno + "</td><td>" + d.name + "</td><td>" + d.English + "</td><td>" + d.Maths + "</td><td>" + d.Science + "</td><td><input type='button' value='view' onclick='viewstudent("+ d.rno +")' /> </td></tr>" )
+                    })
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <td> Roll No</td>
+                <td><input type="text" id="txtrno" />  </td>
+            </tr>
+            <tr>
+                <td> Student Name</td>
+                <td><input type="text" id="txtname" />  </td>
+            </tr>
+            <tr>
+                <td> English</td>
+                <td><input type="text" id="txtenglish" />  </td>
+            </tr>
+            <tr>
+                <td>Maths</td>
+                <td><input type="text" id="txtMaths" />  </td>
+            </tr>
+            <tr>
+                <td> Science</td>
+                <td><input type="text" id="txtScience" />  </td>
+            </tr>
+            <tr>
+                
+                <td colspan="2">
+                    <input type="button" id="btnSubmit" class="btn-success" value="Submit" />
+                    <input type="button" id="btnupdate" class="btn-info" value="Update">
+                    <input type="button" id="btnclear" class="btn-warning" value="Clear">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <hr>
+    <div> 
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>English</th>
+                    <th>Maths</th>
+                    <th>Science</th>
+                    <th>Action</th>
+
+                </tr>
+            </thead>
+            <tbody id="tdstudent"></tbody>
+         </table>
+    </div>
+</body>
+</html>
